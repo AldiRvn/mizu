@@ -1,4 +1,4 @@
-module mizu
+module github.com/AldiRvn/mizu
 
 go 1.24.4
 
