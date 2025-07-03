@@ -16,8 +16,8 @@ import (
 var (
 	redisKey        = "tws.data"
 	redisPubSub     = NewRedisLpushBrpop("localhost:6379", "", "0")
-	redisPubInvalid = NewRedisLpushBrpop("localhost:6379", "", "No")
-	redisSubInvalid = NewRedisLpushBrpop("localhost:6379", "", "69")
+	redisPubInvalid = NewRedisLpushBrpop("localhost:6379", "", "No") //? Test not numeric
+	redisSubInvalid = NewRedisLpushBrpop("localhost:6379", "", "69") //? Test out of range
 	pubSub          = NewPubSub(redisPubSub, redisPubSub)
 )
 
