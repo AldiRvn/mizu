@@ -59,14 +59,24 @@ func Test_Subcribe_Redis(t *testing.T) {
 
 	//? Test Fail
 	pubSub = NewPubSub(redisPubInvalid, redisSubInvalid)
-	pubSub.Publish(ctx, redisKey, []byte(`{"a":"b"}`))
-	pubSub.Subcribe(ctx, redisKey, func(value []byte, err error) {
-		if err != nil {
-			slog.Error(err.Error())
-			return
+	for i := 0; i < 3; i++ {
+		switch i {
+		case 0:
+			pubSub = NewPubSub(redisPubInvalid, redisSubInvalid)
+		case 1:
+			pubSub = NewPubSub(nil, redisSubInvalid)
+		case 2:
+			pubSub = NewPubSub(redisPubInvalid, nil)
 		}
-		slog.Debug(string(value))
-	})
+		pubSub.Publish(ctx, redisKey, []byte(`{"a":"b"}`))
+		pubSub.Subcribe(ctx, redisKey, func(value []byte, err error) {
+			if err != nil {
+				slog.Error(err.Error())
+				return
+			}
+			slog.Debug(string(value))
+		})
+	}
 
 	<-ctx.Done()
 	time.Sleep(time.Second)
