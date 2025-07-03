@@ -42,5 +42,6 @@ func (ps *PubSub) Subcribe(ctx context.Context, key string, callBack func(value 
 		callBack(nil, err)
 		return
 	}
+	slog.Info("starting subscription", "key", key)
 	ps.sub.Subcribe(ctx, key, callBack)
 }
