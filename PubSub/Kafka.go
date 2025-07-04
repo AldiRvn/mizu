@@ -27,8 +27,7 @@ func init() {
 		<-exit
 		for _, w := range kafkaWriterConn {
 			if err := w.Close(); err != nil {
-				slog.Error("kafka publish", "err", "failed to close writer:"+err.Error())
-				return
+				slog.Error("kafka", "err", "failed to close writer:"+err.Error())
 			}
 		}
 	}()

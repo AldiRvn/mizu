@@ -29,6 +29,7 @@ func Test_Kafka_Publish(t *testing.T) {
 	kafkaPubSub.Publish(ctx, kafkaTopic, []byte("TWS2"))
 
 	//? Fail test
+	kafkaPubSub.Publish(ctx, kafkaTopic, nil)
 	kafkaPubSub.Subcribe(ctx, "", func(value []byte, err error) {})
 
 	<-ctx.Done()
