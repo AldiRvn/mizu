@@ -10,16 +10,16 @@ type Publisher interface {
 	Publish(ctx context.Context, key string, value []byte) (err error)
 }
 
-type Subcriber interface {
+type Subscriber interface {
 	Subcribe(ctx context.Context, key string, callBack func(value []byte, err error))
 }
 
 type PubSub struct {
 	pub Publisher
-	sub Subcriber
+	sub Subscriber
 }
 
-func NewPubSub(pub Publisher, sub Subcriber) *PubSub {
+func NewPubSub(pub Publisher, sub Subscriber) *PubSub {
 	return &PubSub{
 		pub: pub,
 		sub: sub,

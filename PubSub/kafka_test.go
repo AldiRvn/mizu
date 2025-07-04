@@ -13,10 +13,10 @@ import (
 var (
 	kafkaAddr       = "localhost:29092"
 	kafkaTopic      = "kafkaTopicTest"
-	kafkaPub        = NewKafka(kafkaAddr)
+	kafkaUtil       = NewKafka(kafkaAddr)
 	invalidKafkaPub = NewKafka("no")
-	kafkaSub        = NewKafka(kafkaAddr)
-	kafkaPubSub     = NewPubSub(kafkaPub, nil)
+	// kafkaSub        = NewPubSub(nil, kafkaUtil)
+	kafkaPub = NewPubSub(kafkaUtil, nil)
 )
 
 func Test_Kafka_Publish(t *testing.T) {
@@ -25,12 +25,12 @@ func Test_Kafka_Publish(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	kafkaPubSub.Publish(ctx, kafkaTopic, []byte("TWS"))
-	kafkaPubSub.Publish(ctx, kafkaTopic, []byte("TWS2"))
+	kafkaPub.Publish(ctx, kafkaTopic, []byte("TWS"))
+	kafkaPub.Publish(ctx, kafkaTopic, []byte("TWS2"))
 
 	//? Fail test
-	kafkaPubSub.Publish(ctx, kafkaTopic, nil)
-	kafkaPubSub.Subcribe(ctx, "", func(value []byte, err error) {})
+	kafkaPub.Publish(ctx, kafkaTopic, nil)
+	kafkaPub.Subcribe(ctx, "", func(value []byte, err error) {})
 
 	<-ctx.Done()
 	p, _ := os.FindProcess(os.Getpid())

@@ -49,18 +49,20 @@ func (k *Kafka) genId(key string) (res string) {
 
 func (k *Kafka) setupConn(key string) *kafka.Writer {
 	idConn := k.genId(key)
-	w, found := kafkaWriterConn[idConn]
-	if !found {
-		w = &kafka.Writer{
-			Addr:     kafka.TCP(strings.Split(k.Addr, ",")...),
-			Topic:    key,
-			Balancer: &kafka.LeastBytes{},
-		}
-		kafkaMutex.Lock()
-		kafkaWriterConn[idConn] = w
-		kafkaMutex.Unlock()
+
+	kafkaMutex.Lock()
+	defer kafkaMutex.Unlock()
+
+	if w, found := kafkaWriterConn[idConn]; found {
 		return w
 	}
+
+	w := &kafka.Writer{
+		Addr:     kafka.TCP(strings.Split(k.Addr, ",")...),
+		Topic:    key,
+		Balancer: &kafka.LeastBytes{},
+	}
+	kafkaWriterConn[idConn] = w
 	return w
 }
 
