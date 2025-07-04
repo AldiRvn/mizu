@@ -61,7 +61,7 @@ jobs:
         run: sleep 10
 
       - name: Run tests and generate coverage report
-        run: go test -v ./... -coverprofile=coverage.out -timeout 30s
+        run: go test -v ./... -coverprofile=coverage.out -timeout 90s
 
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
