@@ -25,21 +25,23 @@ func init() {
 	kafkaReaderConn = make(map[string]*kafka.Reader)
 	kafkaMutex = &sync.Mutex{}
 
-	go func() {
-		exit := make(chan os.Signal, 1)
-		signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
-		<-exit
-		for _, w := range kafkaWriterConn {
-			if err := w.Close(); err != nil {
-				slog.Error("kafka", "err", "failed to close writer:"+err.Error())
-			}
+	go kafkaCloseConn()
+}
+
+func kafkaCloseConn() {
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+	<-exit
+	for _, w := range kafkaWriterConn {
+		if err := w.Close(); err != nil {
+			slog.Error("kafka", "err", "failed to close writer:"+err.Error())
 		}
-		for _, c := range kafkaReaderConn {
-			if err := c.Close(); err != nil {
-				slog.Error("kafka", "err", "failed to close reader:"+err.Error())
-			}
+	}
+	for _, c := range kafkaReaderConn {
+		if err := c.Close(); err != nil {
+			slog.Error("kafka", "err", "failed to close reader:"+err.Error())
 		}
-	}()
+	}
 }
 
 type Kafka struct {
@@ -62,12 +64,12 @@ func NewKafkaConsumer(addr, groupId string, startOffset int64) *Kafka {
 	}
 }
 
-func (k *Kafka) genId(key string) (res string) {
+func (k *Kafka) genConnId(key string) (res string) {
 	return strings.Join([]string{k.addr, key}, "@")
 }
 
 func (k *Kafka) setupWriterConn(key string) *kafka.Writer {
-	idConn := k.genId(key)
+	idConn := k.genConnId(key)
 
 	kafkaMutex.Lock()
 	defer kafkaMutex.Unlock()
@@ -86,7 +88,7 @@ func (k *Kafka) setupWriterConn(key string) *kafka.Writer {
 }
 
 func (k *Kafka) setupConsumerConn(key string) *kafka.Reader {
-	idConn := k.genId(key)
+	idConn := k.genConnId(key)
 
 	kafkaMutex.Lock()
 	defer kafkaMutex.Unlock()
