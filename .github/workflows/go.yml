@@ -36,6 +36,8 @@ jobs:
           KAFKA_CFG_REPLICA_FETCH_MAX_BYTES: 20000000
         options: >-
           --health-cmd "bash -c 'echo > /dev/tcp/localhost/29092'" --health-interval 10s --health-timeout 5s --health-retries 10
+          
+                - name: Create Kafka topic
 
 
     steps:
@@ -46,6 +48,16 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.24.4
+
+      - name: Create Kafka topic
+        run: |
+          docker exec ${{ job.services.kafka.id }} \
+            /opt/bitnami/kafka/bin/kafka-topics.sh \
+              --bootstrap-server localhost:29092 \
+              --create \
+              --topic kafkaTopicTest \
+              --partitions 1 \
+              --replication-factor 1 || true
 
       - name: Wait for Kafka (extra delay)
         run: sleep 10

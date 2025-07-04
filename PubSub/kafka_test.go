@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	kafkaAddr   = "localhost:29092"
-	kafkaTopic  = "tws"
-	kafkaPub    = NewKafka(kafkaAddr)
-	kafkaSub    = NewKafka(kafkaAddr)
-	kafkaPubSub = NewPubSub(kafkaPub, nil)
+	kafkaAddr       = "localhost:29092"
+	kafkaTopic      = "kafkaTopicTest"
+	kafkaPub        = NewKafka(kafkaAddr)
+	invalidKafkaPub = NewKafka("no")
+	kafkaSub        = NewKafka(kafkaAddr)
+	kafkaPubSub     = NewPubSub(kafkaPub, nil)
 )
 
 func Test_Kafka_Publish(t *testing.T) {
@@ -26,6 +27,9 @@ func Test_Kafka_Publish(t *testing.T) {
 
 	kafkaPubSub.Publish(ctx, kafkaTopic, []byte("TWS"))
 	kafkaPubSub.Publish(ctx, kafkaTopic, []byte("TWS2"))
+
+	//? Fail test
+	kafkaPubSub.Subcribe(ctx, "", func(value []byte, err error) {})
 
 	<-ctx.Done()
 	p, _ := os.FindProcess(os.Getpid())
