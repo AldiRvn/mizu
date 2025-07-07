@@ -134,6 +134,12 @@ func (k *Kafka) Subscribe(ctx context.Context, key string, callBack func(value [
 		conn := k.setupConsumerConn(key)
 
 		for {
+			select {
+			case <-ctx.Done():
+				slog.Debug("kafka subscribe stopped because ctx done")
+				return
+			default:
+			}
 			m, err := conn.ReadMessage(ctx)
 			if err != nil {
 				slog.Error("kafka subscribe", "err", err)
