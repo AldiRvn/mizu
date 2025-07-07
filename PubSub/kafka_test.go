@@ -14,12 +14,11 @@ import (
 )
 
 var (
-	kafkaAddr       = "localhost:29092"
-	kafkaTopic      = "kafkaTopicTest"
-	kafkaUtil       = NewKafkaPublish(kafkaAddr)
-	invalidKafkaPub = NewKafkaPublish("no")
-	kafkaSub        = NewPubSub(nil, NewKafkaConsumer(kafkaAddr, "kafkaTopicConsumer:0.0.1", kafka.FirstOffset))
-	kafkaPub        = NewPubSub(kafkaUtil, nil)
+	kafkaAddr  = "localhost:29092"
+	kafkaTopic = "kafkaTopicTest"
+	kafkaUtil  = NewKafkaPublish(kafkaAddr)
+	kafkaSub   = NewPubSub(nil, NewKafkaConsumer(kafkaAddr, "kafkaTopicConsumer:0.0.1", kafka.FirstOffset))
+	kafkaPub   = NewPubSub(kafkaUtil, nil)
 )
 
 func Test_Kafka(t *testing.T) {
@@ -28,14 +27,14 @@ func Test_Kafka(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	kafkaSub.Subcribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subcribe 1", "value", string(value), "err", err) })
-	kafkaSub.Subcribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subcribe 2", "value", string(value), "err", err) })
+	kafkaSub.Subscribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subscribe 1", "value", string(value), "err", err) })
+	kafkaSub.Subscribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subscribe 2", "value", string(value), "err", err) })
 	kafkaPub.Publish(ctx, kafkaTopic, []byte("TWS"))
 	kafkaPub.Publish(ctx, kafkaTopic, []byte("TWS2"))
 
 	//? Fail test
 	kafkaPub.Publish(ctx, kafkaTopic, nil)
-	kafkaPub.Subcribe(ctx, "", func(value []byte, err error) {})
+	kafkaPub.Subscribe(ctx, "", func(value []byte, err error) {})
 
 	<-ctx.Done()
 	p, _ := os.FindProcess(os.Getpid())

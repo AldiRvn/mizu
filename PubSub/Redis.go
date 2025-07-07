@@ -118,12 +118,12 @@ func (r *RedisLpushBrpop) Publish(ctx context.Context, key string, value []byte)
 	return nil
 }
 
-func (r *RedisLpushBrpop) Subcribe(ctx context.Context, key string, callBack func([]byte, error)) {
+func (r *RedisLpushBrpop) Subscribe(ctx context.Context, key string, callBack func([]byte, error)) {
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
-				slog.Info("redis stop subcribe to", "key", key)
+				slog.Info("redis stop subscribe to", "key", key)
 				return
 			default:
 				rdb, err := r.connect(ctx)

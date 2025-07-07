@@ -11,7 +11,7 @@ type Publisher interface {
 }
 
 type Subscriber interface {
-	Subcribe(ctx context.Context, key string, callBack func(value []byte, err error))
+	Subscribe(ctx context.Context, key string, callBack func(value []byte, err error))
 }
 
 type PubSub struct {
@@ -35,7 +35,7 @@ func (ps *PubSub) Publish(ctx context.Context, key string, value []byte) (err er
 	return ps.pub.Publish(ctx, key, value)
 }
 
-func (ps *PubSub) Subcribe(ctx context.Context, key string, callBack func(value []byte, err error)) {
+func (ps *PubSub) Subscribe(ctx context.Context, key string, callBack func(value []byte, err error)) {
 	if ps.sub == nil {
 		err := errors.New("sub is nil")
 		slog.Error("sub", "err", err)
@@ -43,5 +43,5 @@ func (ps *PubSub) Subcribe(ctx context.Context, key string, callBack func(value 
 		return
 	}
 	slog.Info("starting subscription", "key", key)
-	ps.sub.Subcribe(ctx, key, callBack)
+	ps.sub.Subscribe(ctx, key, callBack)
 }

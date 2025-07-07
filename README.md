@@ -29,7 +29,7 @@ pubSub := NewPubSub(redisPubSub, redisPubSub)
 
 pubSub.Publish(ctx, redisKey, []byte(`{"a":"b"}`))
 
-pubSub.Subcribe(ctx, redisKey, func(value []byte, err error) {
+pubSub.Subscribe(ctx, redisKey, func(value []byte, err error) {
     if err != nil {
         slog.Error(err.Error())
         return
@@ -45,5 +45,5 @@ kafkaPub := NewPubSub(kafkaUtil, nil)
 
 kafkaPub.Publish(ctx, kafkaTopic, []byte("TWS"))
 
-kafkaSub.Subcribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subcribe 2", "value", string(value), "err", err) })
+kafkaSub.Subscribe(ctx, kafkaTopic, func(value []byte, err error) { slog.Info("test subscribe 2", "value", string(value), "err", err) })
 ```

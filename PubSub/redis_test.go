@@ -42,14 +42,14 @@ func Test_Publish_Redis(t *testing.T) {
 	pubSub.Publish(ctx, redisKey, []byte(`{"a":"b2"}`))
 }
 
-func Test_Subcribe_Redis(t *testing.T) {
-	fmt.Println("Test_Subcribe_Redis()")
+func Test_Subscribe_Redis(t *testing.T) {
+	fmt.Println("Test_Subscribe_Redis()")
 	Test_Publish_Redis(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	pubSub.Subcribe(ctx, redisKey, func(value []byte, err error) {
+	pubSub.Subscribe(ctx, redisKey, func(value []byte, err error) {
 		if err != nil {
 			slog.Error(err.Error())
 			return
@@ -69,7 +69,7 @@ func Test_Subcribe_Redis(t *testing.T) {
 			pubSub = NewPubSub(redisPubInvalid, nil)
 		}
 		pubSub.Publish(ctx, redisKey, []byte(`{"a":"b"}`))
-		pubSub.Subcribe(ctx, redisKey, func(value []byte, err error) {
+		pubSub.Subscribe(ctx, redisKey, func(value []byte, err error) {
 			if err != nil {
 				slog.Error(err.Error())
 				return

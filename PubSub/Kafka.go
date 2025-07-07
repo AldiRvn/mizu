@@ -129,19 +129,19 @@ func (k *Kafka) Publish(ctx context.Context, key string, value []byte) (err erro
 	return k.publish(ctx, key, msgs)
 }
 
-func (k *Kafka) Subcribe(ctx context.Context, key string, callBack func(value []byte, err error)) {
+func (k *Kafka) Subscribe(ctx context.Context, key string, callBack func(value []byte, err error)) {
 	go func() {
 		conn := k.setupConsumerConn(key)
 
 		for {
 			m, err := conn.ReadMessage(ctx)
 			if err != nil {
-				slog.Error("kafka subcribe", "err", err)
+				slog.Error("kafka subscribe", "err", err)
 				callBack(nil, err)
 				time.Sleep(time.Second)
 				continue
 			}
-			slog.Debug("kafka subcribe", "detail", fmt.Sprintf(
+			slog.Debug("kafka subscribe", "detail", fmt.Sprintf(
 				"message at topic/partition/offset %v/%v/%v: %s = %s", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value)),
 			)
 			callBack(m.Value, err)
