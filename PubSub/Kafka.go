@@ -65,7 +65,11 @@ func NewKafkaConsumer(addr, groupId string, startOffset int64) *Kafka {
 }
 
 func (k *Kafka) genConnId(key string) (res string) {
-	return strings.Join([]string{k.addr, key}, "@")
+	groupId := k.groupId
+	if groupId == "" {
+		groupId = "void"
+	}
+	return strings.Join([]string{k.addr, key, groupId}, "@")
 }
 
 func (k *Kafka) setupWriterConn(key string) *kafka.Writer {
