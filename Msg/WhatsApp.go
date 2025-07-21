@@ -1,4 +1,4 @@
-//coverage:ignore true
+//coverage:ignore file
 package msg
 
 import (
