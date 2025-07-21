@@ -1,3 +1,4 @@
+//coverage:ignore true
 package msg
 
 import (

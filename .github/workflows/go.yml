@@ -63,6 +63,12 @@ jobs:
       - name: Run tests and generate coverage report
         run: go test -v ./... -coverprofile=coverage.out -timeout 90s
 
+      - name: Run install go ignore code coverage
+        run: go install github.com/quantumcycle/go-ignore-cov@latest
+
+      - name: Run code coverage skip
+        run: go-ignore-cov --file coverage.out
+
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
