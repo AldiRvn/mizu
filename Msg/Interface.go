@@ -8,6 +8,7 @@ import (
 type Messager interface {
 	SendText(ctx context.Context, target any, text string) error
 	SendDocument(ctx context.Context, target any, content []byte, fileName string) error
+	SendImage(ctx context.Context, target any, content []byte, fileName string) error
 }
 
 type Message struct {
@@ -26,4 +27,9 @@ func (m *Message) SendText(ctx context.Context, target any, text string) error {
 func (m *Message) SendDocument(ctx context.Context, target any, document []byte, fileName string) error {
 	slog.Debug("msg send", "documentLength", len(document), "fileName", fileName)
 	return m.messager.SendDocument(ctx, target, document, fileName)
+}
+
+func (m *Message) SendImage(ctx context.Context, target any, image []byte, fileName string) error {
+	slog.Debug("msg send", "imageLength", len(image), "fileName", fileName)
+	return m.messager.SendImage(ctx, target, image, fileName)
 }

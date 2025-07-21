@@ -45,6 +45,16 @@ func (w *WhatsApp) afterSendMessage(target types.JID, media types.ChatPresenceMe
 	w.client.SendChatPresence(target, types.ChatPresencePaused, media)
 }
 
+func (w *WhatsApp) uploadFileToServerWa(ctx context.Context, content []byte, mediaType whatsmeow.MediaType) (uploaded whatsmeow.UploadResponse) {
+	uploaded, err := w.client.Upload(
+		ctx, content, mediaType)
+	if err != nil {
+		slog.Error("wa upload file", "err", err)
+		return
+	}
+	return
+}
+
 func (w *WhatsApp) SendText(ctx context.Context, target any, text string) error {
 	media := types.ChatPresenceMediaText
 	targetJid, err := w.getJid(target)
@@ -94,12 +104,31 @@ func (w *WhatsApp) SendDocument(ctx context.Context, target any, document []byte
 	return nil
 }
 
-func (w *WhatsApp) uploadFileToServerWa(ctx context.Context, content []byte, mediaType whatsmeow.MediaType) (uploaded whatsmeow.UploadResponse) {
-	uploaded, err := w.client.Upload(
-		ctx, content, mediaType)
+func (w *WhatsApp) SendImage(ctx context.Context, target any, image []byte, fileName string) error {
+	media := types.ChatPresenceMediaText
+	targetJid, err := w.getJid(target)
 	if err != nil {
-		slog.Error("wa upload file", "err", err)
-		return
+		return err
 	}
-	return
+
+	w.beforeSendMessage(targetJid, media)
+	defer w.afterSendMessage(targetJid, media)
+
+	mimeType := w.getMimeType(fileName)
+	uploaded := w.uploadFileToServerWa(ctx, image, whatsmeow.MediaImage)
+
+	w.client.SendMessage(ctx, targetJid, &waE2E.Message{
+		ImageMessage: &waE2E.ImageMessage{
+			ContextInfo: &waE2E.ContextInfo{},
+			Mimetype:    proto.String(mimeType),
+
+			URL:           &uploaded.URL,
+			DirectPath:    &uploaded.DirectPath,
+			MediaKey:      uploaded.MediaKey,
+			FileEncSHA256: uploaded.FileEncSHA256,
+			FileSHA256:    uploaded.FileSHA256,
+			FileLength:    &uploaded.FileLength,
+		},
+	})
+	return nil
 }
