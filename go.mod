@@ -7,7 +7,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/redis/go-redis/v9 v9.11.0
 	github.com/segmentio/kafka-go v0.4.48
-	go.mau.fi/whatsmeow v0.0.0-20250717084138-aecc878ab213
+	go.mau.fi/whatsmeow v0.0.0-20250723174453-937d77661333
 	google.golang.org/protobuf v1.36.6
 )
 

@@ -15,7 +15,7 @@ go get github.com/AldiRvn/mizu
 ```
 
 ```golang
-import "github.com/AldiRvn/mizu"
+import pubsub "github.com/AldiRvn/mizu/PubSub"
 ```
 
 ## Example
